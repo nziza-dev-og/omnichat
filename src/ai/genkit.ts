@@ -1,7 +1,7 @@
 import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
 
+// Configure Genkit with no default plugins or model,
+// as flows will use specific SDKs like OpenAI directly.
 export const ai = genkit({
-  plugins: [googleAI()],
-  model: 'googleai/gemini-2.0-flash',
+  plugins: [],
 });

@@ -23,9 +23,9 @@ export default function ChatInterface() {
     {
       id: "initial-bot-message",
       role: "assistant",
-      content: "Hello! I am OmniAssist. How can I help you with your coding tasks or other questions today?",
+      content: "Hello! I am OmniAssist, powered by OpenAI. How can I help you with your coding tasks or other questions today?",
       timestamp: new Date(),
-      modelUsed: "OmniAssist Base"
+      modelUsed: "OmniAssist (OpenAI)"
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -56,11 +56,11 @@ export default function ChatInterface() {
           const result: HandleContextOutput = await handleContext(input);
           addMessage({ role: "assistant", content: result.response, modelUsed: modelDisplayName });
           setConversationHistory(result.updatedConversationHistory);
-        } else if (selectedModelValue === "openai-code" || selectedModelValue === "deepinfra-code") {
+        } else if (selectedModelValue === "openai-code") {
           const input: GenerateCodeInput = {
             taskDescription: userInput,
             programmingLanguage: "python", // Defaulting to Python, can be enhanced later
-            modelType: selectedModelValue === "openai-code" ? "OpenAI" : "DeepInfra",
+            modelType: "OpenAI", // Explicitly set to OpenAI
           };
           const result: GenerateCodeOutput = await generateCode(input);
           let botResponse = result.generatedCode;
@@ -73,7 +73,7 @@ export default function ChatInterface() {
           setConversationHistory(prev => `${prev}\n${newHistoryEntry}`.trim());
 
         } else {
-          // Fallback or error for unknown model
+          // Fallback or error for unknown model (should not happen with updated ModelSelector)
           addMessage({ role: "assistant", content: "Sorry, the selected model mode is not configured correctly.", modelUsed: "System Error" });
         }
       } catch (error) {
