@@ -1,3 +1,4 @@
+
 // src/ai/flows/code-generation.ts
 'use server';
 
@@ -29,6 +30,12 @@ export async function generateCode(input: GenerateCodeInput): Promise<GenerateCo
   return generateCodeFlow(input);
 }
 
+// Define the example output structure for clarity and to use with JSON.stringify
+const exampleOutputFormat = {
+  generatedCode: "Your generated code here...",
+  explanation: "A brief explanation of the code."
+};
+
 const generateCodePrompt = ai.definePrompt({
   name: 'generateCodePrompt',
   input: {schema: GenerateCodeInputSchema},
@@ -40,15 +47,12 @@ You will generate code based on the provided task description and programming la
 Task Description: {{{taskDescription}}}
 Programming Language: {{{programmingLanguage}}}
 
-Generate the code and provide a brief explanation.
+Generate the code and provide a brief explanation, ensuring your output is a valid JSON object matching the structure below.
 
 Output:
-```
-{
-  "generatedCode": "",
-  "explanation": ""
-}
-```
+\`\`\`json
+${JSON.stringify(exampleOutputFormat, null, 2)}
+\`\`\`
 `,
 });
 
