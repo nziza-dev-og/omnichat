@@ -1,11 +1,11 @@
 import type {Metadata} from 'next';
-import { Geist, Geist_Mono } from 'next/font/google'; // Corrected import: Geist is default, Geist_Mono is specific
+import { Geist, Geist_Mono } from 'next/font/google'; 
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { Bot } from "lucide-react";
 import { cn } from '@/lib/utils';
 
-const geistSans = Geist({ // Corrected variable name to match usage
+const geistSans = Geist({ 
   variable: '--font-geist-sans',
   subsets: ['latin'],
 });
@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'OmniAssist - Your AI Coding Partner',
-  description: 'AI Chatbot for coding and multipurpose assistance, powered by DeepInfra and OpenAI.',
+  title: 'OmniAssist - Your AI Partner',
+  description: 'AI Chatbot for coding, image generation, and multipurpose assistance, powered by Together AI.',
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(
-          "min-h-screen bg-background font-sans antialiased", // Using Tailwind's font-sans
+          "min-h-screen bg-background font-sans antialiased", 
           geistSans.variable, 
           geistMono.variable
         )}>
@@ -48,7 +48,7 @@ export default function RootLayout({
           <footer className="py-6 md:px-8 md:py-0 border-t bg-background">
             <div className="container flex flex-col items-center justify-between gap-4 md:h-20 md:flex-row">
               <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
-                Built by Your Name/Company. Powered by AI.
+                Built by You. Powered by Together AI.
               </p>
             </div>
           </footer>

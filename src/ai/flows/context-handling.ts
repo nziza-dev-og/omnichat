@@ -1,25 +1,21 @@
 'use server';
 /**
- * @fileOverview Manages conversation context for the chatbot using OpenAI.
+ * @fileOverview Manages conversation context for the chatbot using Together AI.
  *
  * - handleContext - A function that maintains and utilizes conversation context.
  * - HandleContextInput - The input type for the handleContext function.
  * - HandleContextOutput - The return type for the handleContext function.
  */
 
-import {ai}from '@/ai/genkit'; // Genkit's 'ai' object might still be used for defining schemas or other utilities
-import {z}from 'genkit';
-import OpenAI from "openai";
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
+import Together from "together-ai";
 
-// Initialize OpenAI client
-// Ensure OPENAI_API_KEY is in your .env file
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const together = new Together({ apiKey: process.env.TOGETHER_API_KEY });
 
 const HandleContextInputSchema = z.object({
   message: z.string().describe('The user message.'),
-  conversationHistory: z.string().describe('The past conversation history.'),
+  conversationHistory: z.string().describe('The past conversation history (e.g., "User: Hi\\nOmniAssist: Hello!").'),
 });
 export type HandleContextInput = z.infer<typeof HandleContextInputSchema>;
 
@@ -35,7 +31,6 @@ export async function handleContext(input: HandleContextInput): Promise<HandleCo
   return handleContextFlow(input);
 }
 
-// This flow now directly uses the OpenAI API
 const handleContextFlow = ai.defineFlow(
   {
     name: 'handleContextFlow',
@@ -43,43 +38,51 @@ const handleContextFlow = ai.defineFlow(
     outputSchema: HandleContextOutputSchema,
   },
   async (input: HandleContextInput): Promise<HandleContextOutput> => {
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error("OPENAI_API_KEY is not set in the environment variables. Please add it to your .env file.");
+    if (!process.env.TOGETHER_API_KEY) {
+      throw new Error("TOGETHER_API_KEY is not set in the environment variables. Please add it to your .env file.");
     }
 
     const { message, conversationHistory } = input;
 
-    const systemPrompt = `You are a helpful coding assistant named OmniAssist. You maintain the context of the conversation.`;
-    const userPrompt = `Past Conversation:\n${conversationHistory}\n\nUser Message:\n${message}\n\nOmniAssist Response:`;
+    const messagesForApi: {role: "system" | "user" | "assistant", content: string}[] = [
+        { role: "system", content: "You are a helpful coding assistant named OmniAssist. You maintain the context of the conversation." }
+    ];
+
+    if (conversationHistory) {
+      const historyLines = conversationHistory.split('\n');
+      for (const line of historyLines) {
+        if (line.startsWith('User: ')) {
+          messagesForApi.push({ role: 'user', content: line.substring(6) });
+        } else if (line.startsWith('OmniAssist: ')) {
+          messagesForApi.push({ role: 'assistant', content: line.substring(12) });
+        }
+      }
+    }
+    messagesForApi.push({ role: 'user', content: message });
 
     try {
-      const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo", // Or "gpt-4-turbo" or another preferred model
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
+      const completion = await together.chat.completions.create({
+        model: "Qwen/Qwen3-235B-A22B-fp8-tput", 
+        messages: messagesForApi,
         temperature: 0.7,
         max_tokens: 1024,
         top_p: 1,
       });
 
-      const botResponse = completion.choices[0].message.content;
-      if (!botResponse) {
-        throw new Error("OpenAI returned an empty response.");
+      const botResponseContent = completion.choices[0].message?.content;
+      if (!botResponseContent) {
+        throw new Error("Together AI returned an empty response.");
       }
-
-      const updatedConversationHistory = `${conversationHistory}\nUser: ${message}\nOmniAssist: ${botResponse}`.trim();
+      
+      const updatedConversationHistory = `${conversationHistory}\nUser: ${message}\nOmniAssist: ${botResponseContent}`.trim();
       
       return {
-        response: botResponse,
+        response: botResponseContent,
         updatedConversationHistory: updatedConversationHistory,
       };
 
     } catch (error) {
-      console.error("OpenAI API call failed in handleContextFlow:", error);
-      // Consider how to propagate this error or return a meaningful error response
-      // For now, re-throwing, but a structured error object might be better.
+      console.error("Together AI API call failed in handleContextFlow:", error);
       throw error; 
     }
   }

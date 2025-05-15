@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BrainCircuit, Code2 } from "lucide-react";
+import { BrainCircuit, Code2, Image as ImageIcon } from "lucide-react"; // Added ImageIcon
 
 export interface ModelOption {
   value: string;
@@ -17,9 +17,9 @@ export interface ModelOption {
 }
 
 export const availableModels: ModelOption[] = [
-  { value: "general", label: "General Chat (OpenAI)", icon: <BrainCircuit className="w-4 h-4 mr-2" /> },
-  { value: "openai-code", label: "Code Generation (OpenAI)", icon: <Code2 className="w-4 h-4 mr-2" /> },
-  // { value: "deepinfra-code", label: "Code Generation (DeepInfra)", icon: <Code2 className="w-4 h-4 mr-2" /> }, // Removed DeepInfra
+  { value: "together-general", label: "General Chat (Together AI)", icon: <BrainCircuit className="w-4 h-4 mr-2" /> },
+  { value: "together-code", label: "Code Generation (Together AI)", icon: <Code2 className="w-4 h-4 mr-2" /> },
+  { value: "together-image", label: "Image Generation (Together AI)", icon: <ImageIcon className="w-4 h-4 mr-2" /> },
 ];
 
 interface ModelSelectorProps {
@@ -31,7 +31,7 @@ interface ModelSelectorProps {
 export default function ModelSelector({ selectedModel, onModelChange, disabled }: ModelSelectorProps) {
   return (
     <Select value={selectedModel} onValueChange={onModelChange} disabled={disabled}>
-      <SelectTrigger className="w-auto min-w-[240px] text-sm h-10"> {/* Increased min-width for longer label */}
+      <SelectTrigger className="w-auto min-w-[260px] text-sm h-10"> {/* Increased min-width for longer label */}
         <SelectValue placeholder="Select Model/Mode" />
       </SelectTrigger>
       <SelectContent>

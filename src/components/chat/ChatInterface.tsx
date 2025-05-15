@@ -8,6 +8,8 @@ import { handleContext } from "@/ai/flows/context-handling";
 import type { HandleContextInput, HandleContextOutput } from "@/ai/flows/context-handling";
 import { generateCode } from "@/ai/flows/code-generation";
 import type { GenerateCodeInput, GenerateCodeOutput } from "@/ai/flows/code-generation";
+import { generateImage } from "@/ai/flows/image-generation"; // New import
+import type { GenerateImageInput, GenerateImageOutput } from "@/ai/flows/image-generation"; // New import
 import { availableModels } from "./ModelSelector";
 
 export interface Message {
@@ -23,9 +25,9 @@ export default function ChatInterface() {
     {
       id: "initial-bot-message",
       role: "assistant",
-      content: "Hello! I am OmniAssist, powered by OpenAI. How can I help you with your coding tasks or other questions today?",
+      content: "Hello! I am OmniAssist, now powered by Together AI. How can I help you with your coding tasks, image ideas, or other questions today?",
       timestamp: new Date(),
-      modelUsed: "OmniAssist (OpenAI)"
+      modelUsed: "OmniAssist (Together AI)"
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +50,7 @@ export default function ChatInterface() {
       const modelDisplayName = currentModelInfo?.label || selectedModelValue;
 
       try {
-        if (selectedModelValue === "general") {
+        if (selectedModelValue === "together-general") {
           const input: HandleContextInput = {
             message: userInput,
             conversationHistory: conversationHistory,
@@ -56,11 +58,10 @@ export default function ChatInterface() {
           const result: HandleContextOutput = await handleContext(input);
           addMessage({ role: "assistant", content: result.response, modelUsed: modelDisplayName });
           setConversationHistory(result.updatedConversationHistory);
-        } else if (selectedModelValue === "openai-code") {
+        } else if (selectedModelValue === "together-code") {
           const input: GenerateCodeInput = {
             taskDescription: userInput,
-            programmingLanguage: "python", // Defaulting to Python, can be enhanced later
-            modelType: "OpenAI", // Explicitly set to OpenAI
+            programmingLanguage: "python", // Defaulting, enhance later
           };
           const result: GenerateCodeOutput = await generateCode(input);
           let botResponse = result.generatedCode;
@@ -68,12 +69,20 @@ export default function ChatInterface() {
             botResponse += `\n\n**Explanation:**\n${result.explanation}`;
           }
           addMessage({ role: "assistant", content: botResponse, modelUsed: modelDisplayName });
-          // Update conversation history based on this interaction for context
           const newHistoryEntry = `User: ${userInput}\nAssistant (${modelDisplayName}): (Code Snippet Provided)\n${result.explanation || ''}`;
           setConversationHistory(prev => `${prev}\n${newHistoryEntry}`.trim());
-
+        } else if (selectedModelValue === "together-image") {
+          const input: GenerateImageInput = {
+            prompt: userInput,
+          };
+          const result: GenerateImageOutput = await generateImage(input);
+          // Display the image using Markdown format for data URI
+          const imageMarkdown = `![Generated image for prompt: ${result.promptUsed}](${result.b64Json})`;
+          addMessage({ role: "assistant", content: imageMarkdown, modelUsed: modelDisplayName });
+          // Optionally, add a text note to conversation history for context, but not the image itself.
+          const newHistoryEntry = `User: ${userInput}\nAssistant (${modelDisplayName}): (Image generated for prompt: "${result.promptUsed}")`;
+          setConversationHistory(prev => `${prev}\n${newHistoryEntry}`.trim());
         } else {
-          // Fallback or error for unknown model (should not happen with updated ModelSelector)
           addMessage({ role: "assistant", content: "Sorry, the selected model mode is not configured correctly.", modelUsed: "System Error" });
         }
       } catch (error) {
