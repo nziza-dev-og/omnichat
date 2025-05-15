@@ -8,8 +8,8 @@ import { handleContext } from "@/ai/flows/context-handling";
 import type { HandleContextInput, HandleContextOutput } from "@/ai/flows/context-handling";
 import { generateCode } from "@/ai/flows/code-generation";
 import type { GenerateCodeInput, GenerateCodeOutput } from "@/ai/flows/code-generation";
-import { generateImage } from "@/ai/flows/image-generation"; // New import
-import type { GenerateImageInput, GenerateImageOutput } from "@/ai/flows/image-generation"; // New import
+import { generateImage } from "@/ai/flows/image-generation";
+import type { GenerateImageInput, GenerateImageOutput } from "@/ai/flows/image-generation";
 import { availableModels } from "./ModelSelector";
 
 export interface Message {
@@ -75,11 +75,16 @@ export default function ChatInterface() {
           const input: GenerateImageInput = {
             prompt: userInput,
           };
+          addMessage({role: "assistant", content: "Generating image...", modelUsed: modelDisplayName}); // Placeholder message
           const result: GenerateImageOutput = await generateImage(input);
-          // Display the image using Markdown format for data URI
-          const imageMarkdown = `![Generated image for prompt: ${result.promptUsed}](${result.b64Json})`;
-          addMessage({ role: "assistant", content: imageMarkdown, modelUsed: modelDisplayName });
-          // Optionally, add a text note to conversation history for context, but not the image itself.
+          
+          // Update placeholder or add new message with image
+          setMessages(prev => prev.map(m => 
+            m.role === "assistant" && m.content === "Generating image..." 
+            ? { ...m, content: `![Generated image for prompt: ${result.promptUsed}](${result.b64Json})` } 
+            : m
+          ));
+          
           const newHistoryEntry = `User: ${userInput}\nAssistant (${modelDisplayName}): (Image generated for prompt: "${result.promptUsed}")`;
           setConversationHistory(prev => `${prev}\n${newHistoryEntry}`.trim());
         } else {
@@ -102,7 +107,7 @@ export default function ChatInterface() {
   );
 
   return (
-    <div className="flex flex-col h-full bg-background rounded-lg shadow-xl overflow-hidden border">
+    <div className="flex flex-col flex-grow bg-background overflow-hidden md:rounded-lg md:border">
       <MessageList messages={messages} isLoading={isLoading} />
       <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
     </div>

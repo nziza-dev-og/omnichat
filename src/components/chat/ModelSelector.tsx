@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BrainCircuit, Code2, Image as ImageIcon } from "lucide-react"; // Added ImageIcon
+import { BrainCircuit, Code2, Image as ImageIcon } from "lucide-react";
 
 export interface ModelOption {
   value: string;
@@ -17,9 +17,9 @@ export interface ModelOption {
 }
 
 export const availableModels: ModelOption[] = [
-  { value: "together-general", label: "General Chat (Together AI)", icon: <BrainCircuit className="w-4 h-4 mr-2" /> },
-  { value: "together-code", label: "Code Generation (Together AI)", icon: <Code2 className="w-4 h-4 mr-2" /> },
-  { value: "together-image", label: "Image Generation (Together AI)", icon: <ImageIcon className="w-4 h-4 mr-2" /> },
+  { value: "together-general", label: "Chat", icon: <BrainCircuit className="w-4 h-4 mr-2" /> },
+  { value: "together-code", label: "Code", icon: <Code2 className="w-4 h-4 mr-2" /> },
+  { value: "together-image", label: "Image", icon: <ImageIcon className="w-4 h-4 mr-2" /> },
 ];
 
 interface ModelSelectorProps {
@@ -31,8 +31,11 @@ interface ModelSelectorProps {
 export default function ModelSelector({ selectedModel, onModelChange, disabled }: ModelSelectorProps) {
   return (
     <Select value={selectedModel} onValueChange={onModelChange} disabled={disabled}>
-      <SelectTrigger className="w-auto min-w-[260px] text-sm h-10"> {/* Increased min-width for longer label */}
-        <SelectValue placeholder="Select Model/Mode" />
+      <SelectTrigger 
+        className="w-auto min-w-[120px] text-sm h-10 bg-transparent border-0 shadow-none focus:ring-0 focus:ring-offset-0 data-[placeholder]:text-muted-foreground"
+        aria-label="Select AI Model"
+      >
+        <SelectValue placeholder="Select Mode" />
       </SelectTrigger>
       <SelectContent>
         {availableModels.map((model) => (

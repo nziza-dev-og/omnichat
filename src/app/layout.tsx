@@ -33,21 +33,20 @@ export default function RootLayout({
           geistMono.variable
         )}>
         <div className="flex flex-col min-h-screen">
-          <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <header className="sticky top-0 z-50 w-full border-b bg-card">
             <div className="container flex h-16 max-w-screen-xl items-center">
               <div className="mr-4 flex items-center">
                 <Bot className="h-8 w-8 mr-3 text-primary" />
-                <span className="font-bold text-xl tracking-tight">OmniAssist</span>
+                <span className="font-bold text-xl tracking-tight text-foreground">OmniAssist</span>
               </div>
-              {/* Future: Theme toggle or navigation links */}
             </div>
           </header>
-          <main className="flex-1">
+          <main className="flex-1 flex flex-col">
             {children}
           </main>
-          <footer className="py-6 md:px-8 md:py-0 border-t bg-background">
-            <div className="container flex flex-col items-center justify-between gap-4 md:h-20 md:flex-row">
-              <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
+          <footer className="py-4 md:px-8 border-t bg-card">
+            <div className="container flex flex-col items-center justify-center gap-2 md:h-16 md:flex-row">
+              <p className="text-balance text-center text-xs leading-loose text-muted-foreground md:text-left">
                 Built by You. Powered by Together AI.
               </p>
             </div>
