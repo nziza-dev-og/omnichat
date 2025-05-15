@@ -26,7 +26,7 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"; // Reset height
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`; // Set to scroll height up to max
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`; // Max 160px height (approx 4-5 lines)
     }
   };
   
@@ -53,15 +53,15 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
   };
 
   return (
-    <div className="p-3 sm:p-4 bg-background border-t">
-      <div className="flex items-end gap-2 bg-card p-2 rounded-lg border shadow-sm">
+    <div className="p-3 sm:p-4 border-t bg-background"> {/* Use bg-background matching chat panel */}
+      <div className="flex items-end gap-2 bg-input p-2.5 rounded-lg border shadow-sm"> {/* Changed to bg-input */}
         <Textarea
           ref={textareaRef}
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}
-          placeholder="Type your message..."
-          className="flex-grow resize-none min-h-[40px] max-h-[200px] text-sm focus-visible:ring-0 focus-visible:ring-offset-0 border-0 shadow-none p-2.5 bg-transparent"
+          placeholder="Type your message to OmniAssist..."
+          className="flex-grow resize-none min-h-[40px] max-h-[160px] text-sm focus-visible:ring-0 focus-visible:ring-offset-0 border-0 shadow-none p-2 bg-transparent placeholder:text-muted-foreground/70"
           rows={1}
           disabled={isLoading}
         />
@@ -75,15 +75,15 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
           disabled={isLoading || !inputValue.trim()} 
           size="icon" 
           className={cn(
-            "h-10 w-10 shrink-0",
+            "h-9 w-9 shrink-0 rounded-md", // Adjusted size and rounding
             isLoading || !inputValue.trim() ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
           aria-label="Send message"
         >
-          <SendHorizonal size={20} />
+          <SendHorizonal size={18} /> {/* Adjusted icon size */}
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground/80 mt-2 text-center">
+      <p className="text-xs text-muted-foreground/60 mt-2 text-center">
         Shift+Enter for new line. Mode: {availableModels.find(m => m.value === selectedModel)?.label || 'Chat'}.
       </p>
     </div>

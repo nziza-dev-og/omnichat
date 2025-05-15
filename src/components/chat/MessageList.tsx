@@ -12,6 +12,8 @@ interface MessageListProps {
 
 export default function MessageList({ messages, isLoading }: MessageListProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     if (viewportRef.current) {
@@ -19,9 +21,11 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
     }
   }, [messages, isLoading]);
 
+
+  // Ensure the component itself can grow and enable scrolling internally
   return (
-    <ScrollArea className="flex-1">
-      <div ref={viewportRef} className="p-4 space-y-4">
+    <ScrollArea className="flex-1" viewportRef={scrollAreaRef}>
+      <div ref={viewportRef} className="p-4 space-y-4 "> {/* Removed h-full which might conflict with ScrollArea */}
         {messages.map((msg) => (
           <MessageItem key={msg.id} message={msg} />
         ))}

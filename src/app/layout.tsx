@@ -26,30 +26,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="h-full">
       <body className={cn(
-          "min-h-screen bg-background font-sans antialiased", 
+          "h-full bg-background font-sans antialiased flex flex-col", 
           geistSans.variable, 
           geistMono.variable
         )}>
-        <div className="flex flex-col min-h-screen">
-          <header className="sticky top-0 z-50 w-full border-b bg-card">
-            <div className="container flex h-16 max-w-screen-xl items-center">
+        <div className="flex flex-col flex-1 min-h-0"> {/* Changed to flex-1 and min-h-0 */}
+          <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-sm">
+            <div className="container flex h-16 max-w-screen-2xl items-center px-4 md:px-6"> {/* Wider container */}
               <div className="mr-4 flex items-center">
                 <Bot className="h-8 w-8 mr-3 text-primary" />
                 <span className="font-bold text-xl tracking-tight text-foreground">OmniAssist</span>
               </div>
             </div>
           </header>
-          <main className="flex-1 flex flex-col">
+          <main className="flex-1 flex flex-col overflow-hidden"> {/* Added overflow-hidden */}
             {children}
           </main>
-          <footer className="py-4 md:px-8 border-t bg-card">
-            <div className="container flex flex-col items-center justify-center gap-2 md:h-16 md:flex-row">
-              <p className="text-balance text-center text-xs leading-loose text-muted-foreground md:text-left">
-                Built by You. Powered by Together AI.
-              </p>
-            </div>
+          {/* Footer can be simplified or removed if not matching the new design */}
+          <footer className="py-3 md:px-6 border-t bg-card/80 text-xs text-center text-muted-foreground">
+            Built by You. Powered by Together AI.
           </footer>
         </div>
         <Toaster />

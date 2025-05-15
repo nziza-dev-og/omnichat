@@ -1,7 +1,7 @@
 "use client";
 
 import type { Message } from "./ChatInterface";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar"; // Removed AvatarFallback as we will use icons directly
 import { Bot, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -15,18 +15,18 @@ export default function MessageItem({ message }: MessageItemProps) {
   const isUser = message.role === "user";
 
   return (
-    <div className={cn("flex items-start gap-3", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("flex items-start gap-3 w-full", isUser ? "justify-end" : "justify-start")}>
       {!isUser && (
-        <Avatar className="h-8 w-8 self-start shadow bg-primary text-primary-foreground flex items-center justify-center">
+        <Avatar className="h-8 w-8 self-start shadow bg-secondary text-secondary-foreground flex items-center justify-center shrink-0">
           <Bot size={18} />
         </Avatar>
       )}
       <div
         className={cn(
-          "max-w-[80%] p-3 px-4 rounded-lg shadow-sm text-sm",
+          "max-w-[85%] p-3 px-4 rounded-lg shadow-sm text-sm",
           isUser
             ? "bg-primary text-primary-foreground"
-            : "bg-card text-card-foreground border"
+            : "bg-card text-card-foreground border" // Bot messages now use card styles
         )}
       >
         {message.content === "Thinking..." ? (
@@ -44,8 +44,27 @@ export default function MessageItem({ message }: MessageItemProps) {
                 h2: ({node, ...props}) => <h2 className="text-lg font-semibold mt-2 mb-1" {...props} />,
                 h3: ({node, ...props}) => <h3 className="text-base font-semibold mt-1 mb-1" {...props} />,
                 a: ({node, ...props}) => <a target="_blank" rel="noopener noreferrer" {...props} />,
-                img: ({node, ...props}) => <img className="max-w-xs md:max-w-sm lg:max-w-md rounded-md my-2 shadow-md" {...props} />,
+                // Ensure images in chat messages don't overflow their bubbles too much
+                img: ({node, ...props}) => <img className="max-w-full h-auto rounded-md my-2 shadow-md" {...props} />,
                 p: ({node, ...props}) => <p className="mb-0 last:mb-0" {...props} />,
+                pre: ({node, ...props}) => <pre className="text-xs sm:text-sm md:text-base" {...props} />, // Adjust pre font size
+                code: ({node, inline, className, children, ...props}) => {
+                  const match = /language-(\w+)/.exec(className || '')
+                  return !inline && match ? (
+                    <div className="my-2 rounded-md overflow-hidden border bg-muted"> 
+                      <div className="px-3 py-1 text-xs text-muted-foreground/70 border-b">
+                        {match[1]}
+                      </div>
+                       <code className={cn(className, "block p-3 overflow-x-auto !bg-transparent !text-muted-foreground")} {...props}>
+                        {children}
+                      </code>
+                    </div>
+                  ) : (
+                    <code className={cn(className, "!bg-muted/50 !text-muted-foreground px-1 py-0.5 rounded-sm")} {...props}>
+                      {children}
+                    </code>
+                  )
+                }
               }}
             >
               {message.content}
@@ -54,13 +73,13 @@ export default function MessageItem({ message }: MessageItemProps) {
         )}
 
         {message.modelUsed && !isUser && message.content !== "Thinking..." && (
-          <p className="text-xs text-muted-foreground mt-1.5 text-right">
+          <p className="text-xs text-muted-foreground/80 mt-1.5 text-right">
             via {message.modelUsed}
           </p>
         )}
       </div>
       {isUser && (
-         <Avatar className="h-8 w-8 self-start shadow bg-muted text-muted-foreground flex items-center justify-center">
+         <Avatar className="h-8 w-8 self-start shadow bg-primary text-primary-foreground flex items-center justify-center shrink-0">
             <User size={18} />
         </Avatar>
       )}

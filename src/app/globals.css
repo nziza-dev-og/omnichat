@@ -8,34 +8,34 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 98%; /* Off-white */
-    --foreground: 240 10% 3.9%; /* Near black */
+    --background: 30 50% 98%; /* light warm off-white */
+    --foreground: 240 10% 20%; /* dark grayish blue */
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 240 10% 3.9%; /* Near black */
+    --card: 30 30% 94%; /* slightly darker warm off-white, for AI messages, playground header */
+    --card-foreground: 240 10% 20%;
 
-    --popover: 0 0% 100%; /* White */
-    --popover-foreground: 240 10% 3.9%; /* Near black */
+    --popover: 30 30% 94%;
+    --popover-foreground: 240 10% 20%;
 
-    --primary: 142 71% 45%; /* Green */
-    --primary-foreground: 142 71% 95%; /* Very light green/white text on primary */
+    --primary: 270 60% 60%; /* purple */
+    --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 240 5% 90%; /* Light gray for secondary elements */
-    --secondary-foreground: 240 5% 30%; /* Darker gray for text on secondary */
+    --secondary: 240 10% 90%; /* light gray for secondary elements */
+    --secondary-foreground: 240 10% 30%; /* Darker gray for text on secondary */
 
-    --muted: 0 0% 95%; /* Slightly darker off-white for subtle backgrounds/borders */
-    --muted-foreground: 240 5% 65%; /* Gray for muted text */
+    --muted: 240 4% 20%; /* dark gray for code editor background */
+    --muted-foreground: 240 5% 85%; /* light gray for code text */
 
-    --accent: 142 60% 50%; /* Slightly different Green for accents if needed */
-    --accent-foreground: 0 0% 100%; /* White text on accent */
+    --accent: 270 50% 65%; /* slightly lighter purple for hover states */
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 90%; /* Light gray border */
-    --input: 0 0% 100%; /* White input background */
+    --border: 240 10% 85%;
+    --input: 0 0% 100%; /* white input background */
     
-    --ring: 142 71% 45%; /* Green for focus rings */
+    --ring: 270 60% 60%; /* purple for focus rings */
 
     --radius: 0.5rem;
 
@@ -45,7 +45,7 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
 
-    /* Sidebar variables remain, but main chat UI is the focus */
+    /* Sidebar variables might be less relevant if not using the sidebar component directly */
     --sidebar-background: 210 27% 97%;
     --sidebar-foreground: 220 26% 15%;
     --sidebar-primary: 173 45% 52%;
@@ -57,33 +57,33 @@ body {
   }
 
   .dark {
-    --background: 240 6% 10%; /* Very dark gray */
-    --foreground: 0 0% 95%; /* Light gray text */
+    --background: 240 6% 10%; 
+    --foreground: 30 50% 95%;
 
-    --card: 240 6% 12%; /* Slightly lighter dark gray for assistant messages/input */
-    --card-foreground: 0 0% 95%;
+    --card: 240 6% 12%; 
+    --card-foreground: 30 50% 95%;
 
     --popover: 240 6% 10%; 
-    --popover-foreground: 0 0% 95%;
+    --popover-foreground: 30 50% 95%;
 
-    --primary: 142 71% 45%; /* Green */
-    --primary-foreground: 142 71% 95%; 
+    --primary: 270 50% 70%; /* lighter purple for dark mode */
+    --primary-foreground: 0 0% 100%; 
 
-    --secondary: 240 6% 20%; /* Darker gray for secondary elements */
-    --secondary-foreground: 0 0% 80%; /* Lighter gray for text on secondary */
+    --secondary: 240 6% 20%; 
+    --secondary-foreground: 30 50% 80%;
 
-    --muted: 240 6% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 240 4% 18%; /* Darker bg for code editor in dark mode */
+    --muted-foreground: 240 5% 85%; /* Light text for code editor */
 
-    --accent: 142 60% 50%; 
+    --accent: 270 50% 75%; 
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 6% 20%;
-    --input: 240 6% 12%; 
-    --ring: 142 71% 45%;
+    --border: 240 6% 25%;
+    --input: 240 6% 14%; 
+    --ring: 270 50% 70%;
 
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -106,41 +106,43 @@ body {
   * {
     @apply border-border;
   }
+  html, body, #__next {
+    height: 100%;
+  }
   body {
     @apply bg-background text-foreground;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
-  main {
+  main { /* this main is inside RootLayout */
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    display: flex; /* Changed */
+    flex-direction: column; /* Changed */
   }
 
   /* Markdown code block styling */
   .markdown-content pre, .markdown-content pre[class*="language-"] {
-    @apply bg-muted p-4 rounded-md overflow-x-auto my-2;
+    @apply bg-muted p-4 rounded-md overflow-x-auto my-2 text-sm;
     font-family: var(--font-geist-mono);
-    color: hsl(var(--muted-foreground));
+    color: hsl(var(--muted-foreground)); /* Text color for code blocks */
   }
 
   .dark .markdown-content pre, .dark .markdown-content pre[class*="language-"] {
-     background-color: hsl(240 6% 15% / 1); /* custom dark bg for code */
-     color: hsl(0 0% 85% / 1); /* custom light text for code */
+     background-color: hsl(var(--muted) / 1); /* Use muted for code block bg in dark */
+     color: hsl(var(--muted-foreground) / 1); /* Use muted-foreground for code block text in dark */
   }
   
   .markdown-content code:not(pre > code), .markdown-content code[class*="language-"]:not(pre > code[class*="language-"]) {
-    @apply bg-muted text-muted-foreground px-1 py-0.5 rounded-sm text-sm;
+    @apply bg-muted/20 text-muted-foreground px-1 py-0.5 rounded-sm text-sm;
     font-family: var(--font-geist-mono);
   }
 
   .dark .markdown-content code:not(pre > code), .dark .markdown-content code[class*="language-"]:not(pre > code[class*="language-"]) {
-    background-color: hsl(240 6% 20% / 1);
-    color: hsl(0 0% 75% / 1);
+    background-color: hsl(var(--muted) / 0.3);
+    color: hsl(var(--muted-foreground) / 0.8);
   }
 
-  /* Improve list styling in markdown */
   .markdown-content ul, .markdown-content ol {
     @apply list-inside list-disc pl-4 my-2;
   }
