@@ -1,19 +1,21 @@
+
 "use client";
 
 import type React from "react";
 import { useState, type ChangeEvent, type KeyboardEvent, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { SendHorizonal } from "lucide-react";
+import { SendHorizonal, PlusCircle } from "lucide-react"; // Added PlusCircle
 import ModelSelector, { availableModels } from "./ModelSelector";
 import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
   onSendMessage: (message: string, selectedModel: string) => void;
   isLoading: boolean;
+  onNewChat: () => void; // Added prop
 }
 
-export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
+export default function ChatInput({ onSendMessage, isLoading, onNewChat }: ChatInputProps) {
   const [inputValue, setInputValue] = useState("");
   const [selectedModel, setSelectedModel] = useState<string>(availableModels[0].value);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -25,8 +27,8 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
 
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; // Reset height
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`; // Max 160px height (approx 4-5 lines)
+      textareaRef.current.style.height = "auto"; 
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`; 
     }
   };
   
@@ -40,7 +42,7 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
       onSendMessage(inputValue.trim(), selectedModel);
       setInputValue("");
       if (textareaRef.current) {
-        textareaRef.current.style.height = "auto"; // Reset height after send
+        textareaRef.current.style.height = "auto"; 
       }
     }
   };
@@ -53,8 +55,18 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
   };
 
   return (
-    <div className="p-3 sm:p-4 border-t bg-card"> {/* Changed to bg-card */}
+    <div className="p-3 sm:p-4 border-t bg-card">
       <div className="flex items-end gap-2 bg-input p-2.5 rounded-lg border shadow-sm">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-9 w-9 shrink-0 rounded-md"
+          onClick={onNewChat}
+          disabled={isLoading}
+          aria-label="Start new chat"
+        >
+          <PlusCircle size={18} />
+        </Button>
         <Textarea
           ref={textareaRef}
           value={inputValue}
@@ -89,3 +101,4 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
     </div>
   );
 }
+

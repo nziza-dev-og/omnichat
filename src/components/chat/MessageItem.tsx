@@ -1,17 +1,20 @@
+
 "use client";
 
 import type { Message } from "./ChatInterface";
-import { Avatar } from "@/components/ui/avatar"; // Removed AvatarFallback as we will use icons directly
-import { Bot, User } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Bot, User, Volume2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
 
 interface MessageItemProps {
   message: Message;
+  playAudio: (audioDataUri: string) => void;
 }
 
-export default function MessageItem({ message }: MessageItemProps) {
+export default function MessageItem({ message, playAudio }: MessageItemProps) {
   const isUser = message.role === "user";
 
   return (
@@ -26,7 +29,7 @@ export default function MessageItem({ message }: MessageItemProps) {
           "max-w-[85%] p-3 px-4 rounded-lg shadow-sm text-sm",
           isUser
             ? "bg-primary text-primary-foreground"
-            : "bg-card text-card-foreground border" // Bot messages now use card styles
+            : "bg-card text-card-foreground border"
         )}
       >
         {message.content === "Thinking..." ? (
@@ -44,10 +47,9 @@ export default function MessageItem({ message }: MessageItemProps) {
                 h2: ({node, ...props}) => <h2 className="text-lg font-semibold mt-2 mb-1" {...props} />,
                 h3: ({node, ...props}) => <h3 className="text-base font-semibold mt-1 mb-1" {...props} />,
                 a: ({node, ...props}) => <a target="_blank" rel="noopener noreferrer" {...props} />,
-                // Ensure images in chat messages don't overflow their bubbles too much
                 img: ({node, ...props}) => <img className="max-w-full h-auto rounded-md my-2 shadow-md" {...props} />,
                 p: ({node, ...props}) => <p className="mb-0 last:mb-0" {...props} />,
-                pre: ({node, ...props}) => <pre className="text-xs sm:text-sm md:text-base" {...props} />, // Adjust pre font size
+                pre: ({node, ...props}) => <pre className="text-xs sm:text-sm md:text-base" {...props} />,
                 code: ({node, inline, className, children, ...props}) => {
                   const match = /language-(\w+)/.exec(className || '')
                   return !inline && match ? (
@@ -72,11 +74,24 @@ export default function MessageItem({ message }: MessageItemProps) {
           </div>
         )}
 
-        {message.modelUsed && !isUser && message.content !== "Thinking..." && (
-          <p className="text-xs text-muted-foreground/80 mt-1.5 text-right">
-            via {message.modelUsed}
-          </p>
-        )}
+        <div className="flex items-center justify-between mt-1.5">
+          {message.modelUsed && !isUser && message.content !== "Thinking..." && (
+            <p className="text-xs text-muted-foreground/80">
+              via {message.modelUsed}
+            </p>
+          )}
+          {message.audioDataUri && !isUser && message.content !== "Thinking..." && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-auto h-6 w-6 text-muted-foreground hover:text-foreground"
+              onClick={() => playAudio(message.audioDataUri!)}
+              aria-label="Play audio"
+            >
+              <Volume2 size={14} />
+            </Button>
+          )}
+        </div>
       </div>
       {isUser && (
          <Avatar className="h-8 w-8 self-start shadow bg-primary text-primary-foreground flex items-center justify-center shrink-0">
@@ -86,3 +101,4 @@ export default function MessageItem({ message }: MessageItemProps) {
     </div>
   );
 }
+

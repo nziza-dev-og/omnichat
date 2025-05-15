@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Message } from "./ChatInterface";
@@ -8,9 +9,10 @@ import React, { useEffect, useRef } from "react";
 interface MessageListProps {
   messages: Message[];
   isLoading: boolean;
+  playAudio: (audioDataUri: string) => void; // Added prop
 }
 
-export default function MessageList({ messages, isLoading }: MessageListProps) {
+export default function MessageList({ messages, isLoading, playAudio }: MessageListProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -22,19 +24,22 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
   }, [messages, isLoading]);
 
 
-  // Ensure the component itself can grow and enable scrolling internally
   return (
     <ScrollArea className="flex-1" viewportRef={scrollAreaRef}>
-      <div ref={viewportRef} className="p-4 space-y-4 "> {/* Removed h-full which might conflict with ScrollArea */}
+      <div ref={viewportRef} className="p-4 space-y-4 ">
         {messages.map((msg) => (
-          <MessageItem key={msg.id} message={msg} />
+          <MessageItem key={msg.id} message={msg} playAudio={playAudio} />
         ))}
         {isLoading && messages[messages.length -1]?.role === 'user' && (
           <div className="flex items-start gap-3">
-             <MessageItem message={{id: "loading", role: "assistant", content: "Thinking...", timestamp: new Date()}}/>
+             <MessageItem 
+                message={{id: "loading", role: "assistant", content: "Thinking...", timestamp: new Date()}}
+                playAudio={playAudio} // Pass dummy or handle appropriately
+             />
           </div>
         )}
       </div>
     </ScrollArea>
   );
 }
+
