@@ -21,7 +21,7 @@ if (elevenLabsApiKey) {
   });
 }
 
-export const TextToSpeechInputSchema = z.object({
+const TextToSpeechInputSchema = z.object({
   text: z.string().describe('The text to be converted to speech.'),
   voiceId: z
     .string()
@@ -31,7 +31,7 @@ export const TextToSpeechInputSchema = z.object({
 });
 export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;
 
-export const TextToSpeechOutputSchema = z.object({
+const TextToSpeechOutputSchema = z.object({
   audioDataUri: z
     .string()
     .describe(
