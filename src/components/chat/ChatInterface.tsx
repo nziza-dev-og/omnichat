@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -59,28 +60,40 @@ export default function ChatInterface() {
           addMessage({ role: "assistant", content: result.response, modelUsed: modelDisplayName });
           setConversationHistory(result.updatedConversationHistory);
         } else if (selectedModelValue === "together-code") {
-          const input: GenerateCodeInput = {
+          const codeInput: GenerateCodeInput = { // Renamed to avoid conflict with 'input' if it were in wider scope
             taskDescription: userInput,
-            programmingLanguage: "python", // Defaulting, enhance later
+            programmingLanguage: "python", // Defaulting, enhance later if needed
           };
-          const result: GenerateCodeOutput = await generateCode(input);
-          let botResponse = result.generatedCode;
+          const result: GenerateCodeOutput = await generateCode(codeInput);
+          
+          let botResponse = `\`\`\`${codeInput.programmingLanguage || 'code'}\n${result.generatedCode}\n\`\`\``;
           if (result.explanation) {
             botResponse += `\n\n**Explanation:**\n${result.explanation}`;
           }
           addMessage({ role: "assistant", content: botResponse, modelUsed: modelDisplayName });
+          
           const newHistoryEntry = `User: ${userInput}\nAssistant (${modelDisplayName}): (Code Snippet Provided)\n${result.explanation || ''}`;
           setConversationHistory(prev => `${prev}\n${newHistoryEntry}`.trim());
+
         } else if (selectedModelValue === "together-image") {
-          const input: GenerateImageInput = {
+          const imageInput: GenerateImageInput = { // Renamed for clarity
             prompt: userInput,
           };
-          addMessage({role: "assistant", content: "Generating image...", modelUsed: modelDisplayName}); // Placeholder message
-          const result: GenerateImageOutput = await generateImage(input);
+          // Add a placeholder message immediately for image generation
+          const placeholderId = crypto.randomUUID();
+          addMessage({ 
+            id: placeholderId, 
+            role: "assistant", 
+            content: `Generating image for: "${userInput}"...`, 
+            modelUsed: modelDisplayName,
+            timestamp: new Date() 
+          });
+
+          const result: GenerateImageOutput = await generateImage(imageInput);
           
-          // Update placeholder or add new message with image
+          // Update the placeholder message with the actual image or error
           setMessages(prev => prev.map(m => 
-            m.role === "assistant" && m.content === "Generating image..." 
+            m.id === placeholderId
             ? { ...m, content: `![Generated image for prompt: ${result.promptUsed}](${result.b64Json})` } 
             : m
           ));
@@ -93,7 +106,17 @@ export default function ChatInterface() {
       } catch (error) {
         console.error("AI call failed:", error);
         const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-        addMessage({ role: "assistant", content: `Sorry, I encountered an error: ${errorMessage}`, modelUsed: "System Error"});
+        // If there's a placeholder for image generation and it fails, update it with an error.
+        const imagePlaceholder = messages.find(m => m.content.startsWith("Generating image for:") && m.role === "assistant");
+        if (selectedModelValue === "together-image" && imagePlaceholder) {
+            setMessages(prev => prev.map(m =>
+                m.id === imagePlaceholder.id
+                ? { ...m, content: `Sorry, I encountered an error generating the image: ${errorMessage}` }
+                : m
+            ));
+        } else {
+            addMessage({ role: "assistant", content: `Sorry, I encountered an error: ${errorMessage}`, modelUsed: "System Error"});
+        }
         toast({
           title: "Error",
           description: `Failed to get response from AI: ${errorMessage}`,
@@ -103,7 +126,7 @@ export default function ChatInterface() {
         setIsLoading(false);
       }
     },
-    [conversationHistory, toast] 
+    [conversationHistory, toast, messages] // Added messages to dependency array for image placeholder update logic
   );
 
   return (
