@@ -53,8 +53,8 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
   };
 
   return (
-    <div className="p-3 sm:p-4 border-t bg-background"> {/* Use bg-background matching chat panel */}
-      <div className="flex items-end gap-2 bg-input p-2.5 rounded-lg border shadow-sm"> {/* Changed to bg-input */}
+    <div className="p-3 sm:p-4 border-t bg-card"> {/* Changed to bg-card */}
+      <div className="flex items-end gap-2 bg-input p-2.5 rounded-lg border shadow-sm">
         <Textarea
           ref={textareaRef}
           value={inputValue}
@@ -75,12 +75,12 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
           disabled={isLoading || !inputValue.trim()} 
           size="icon" 
           className={cn(
-            "h-9 w-9 shrink-0 rounded-md", // Adjusted size and rounding
+            "h-9 w-9 shrink-0 rounded-md", 
             isLoading || !inputValue.trim() ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
           aria-label="Send message"
         >
-          <SendHorizonal size={18} /> {/* Adjusted icon size */}
+          <SendHorizonal size={18} /> 
         </Button>
       </div>
       <p className="text-xs text-muted-foreground/60 mt-2 text-center">

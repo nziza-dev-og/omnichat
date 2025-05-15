@@ -8,23 +8,23 @@ body {
 
 @layer base {
   :root {
-    --background: 30 50% 98%; /* light warm off-white */
-    --foreground: 240 10% 20%; /* dark grayish blue */
+    --background: 220 25% 97%; /* very light cool gray */
+    --foreground: 220 20% 25%; /* dark cool gray */
 
-    --card: 30 30% 94%; /* slightly darker warm off-white, for AI messages, playground header */
-    --card-foreground: 240 10% 20%;
+    --card: 0 0% 100%; /* white */
+    --card-foreground: 220 20% 25%;
 
-    --popover: 30 30% 94%;
-    --popover-foreground: 240 10% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 25%;
 
     --primary: 270 60% 60%; /* purple */
     --primary-foreground: 0 0% 100%; /* white */
 
-    --secondary: 240 10% 90%; /* light gray for secondary elements */
-    --secondary-foreground: 240 10% 30%; /* Darker gray for text on secondary */
+    --secondary: 220 20% 90%; /* light cool gray for secondary elements */
+    --secondary-foreground: 220 20% 30%; /* Darker gray for text on secondary */
 
-    --muted: 240 4% 20%; /* dark gray for code editor background */
-    --muted-foreground: 240 5% 85%; /* light gray for code text */
+    --muted: 220 20% 15%; /* very dark cool gray - for code editor background (always dark) */
+    --muted-foreground: 220 20% 85%; /* light cool gray - for code text */
 
     --accent: 270 50% 65%; /* slightly lighter purple for hover states */
     --accent-foreground: 0 0% 100%;
@@ -32,8 +32,8 @@ body {
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 10% 85%;
-    --input: 0 0% 100%; /* white input background */
+    --border: 220 20% 88%; /* light cool gray border */
+    --input: 0 0% 100%; /* white input background - same as card */
     
     --ring: 270 60% 60%; /* purple for focus rings */
 
@@ -57,23 +57,23 @@ body {
   }
 
   .dark {
-    --background: 240 6% 10%; 
-    --foreground: 30 50% 95%;
+    --background: 220 20% 10%;  /* very dark cool gray */
+    --foreground: 220 20% 90%; /* light cool gray */
 
-    --card: 240 6% 12%; 
-    --card-foreground: 30 50% 95%;
+    --card: 220 20% 15%; /* dark cool gray, slightly lighter than main bg */
+    --card-foreground: 220 20% 90%;
 
-    --popover: 240 6% 10%; 
-    --popover-foreground: 30 50% 95%;
+    --popover: 220 20% 10%; 
+    --popover-foreground: 220 20% 90%;
 
     --primary: 270 50% 70%; /* lighter purple for dark mode */
     --primary-foreground: 0 0% 100%; 
 
-    --secondary: 240 6% 20%; 
-    --secondary-foreground: 30 50% 80%;
+    --secondary: 220 20% 25%; 
+    --secondary-foreground: 220 20% 80%;
 
-    --muted: 240 4% 18%; /* Darker bg for code editor in dark mode */
-    --muted-foreground: 240 5% 85%; /* Light text for code editor */
+    --muted: 220 20% 15%; /* very dark cool gray - for code editor background (always dark, same as light) */
+    --muted-foreground: 220 20% 85%; /* Light text for code editor */
 
     --accent: 270 50% 75%; 
     --accent-foreground: 0 0% 100%;
@@ -81,8 +81,8 @@ body {
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 6% 25%;
-    --input: 240 6% 14%; 
+    --border: 220 20% 30%; /* darker cool gray border */
+    --input: 220 20% 15%; /* dark input background - same as card */
     --ring: 270 50% 70%;
 
     --chart-1: 220 70% 50%;
@@ -117,22 +117,19 @@ body {
   }
   main { /* this main is inside RootLayout */
     flex-grow: 1;
-    display: flex; /* Changed */
-    flex-direction: column; /* Changed */
+    display: flex; 
+    flex-direction: column; 
   }
 
-  /* Markdown code block styling */
+  /* Markdown code block styling - used in MessageItem.tsx */
   .markdown-content pre, .markdown-content pre[class*="language-"] {
     @apply bg-muted p-4 rounded-md overflow-x-auto my-2 text-sm;
     font-family: var(--font-geist-mono);
     color: hsl(var(--muted-foreground)); /* Text color for code blocks */
   }
-
-  .dark .markdown-content pre, .dark .markdown-content pre[class*="language-"] {
-     background-color: hsl(var(--muted) / 1); /* Use muted for code block bg in dark */
-     color: hsl(var(--muted-foreground) / 1); /* Use muted-foreground for code block text in dark */
-  }
   
+  /* No specific .dark override needed here as --muted and --muted-foreground are designed for this */
+
   .markdown-content code:not(pre > code), .markdown-content code[class*="language-"]:not(pre > code[class*="language-"]) {
     @apply bg-muted/20 text-muted-foreground px-1 py-0.5 rounded-sm text-sm;
     font-family: var(--font-geist-mono);

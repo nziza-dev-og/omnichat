@@ -70,11 +70,17 @@ export default function ChatInterface({ onContentGenerated }: ChatInterfaceProps
         } else if (selectedModelValue === "together-code") {
           const codeInput: GenerateCodeInput = {
             taskDescription: userInput,
-            programmingLanguage: "python", // Defaulting, could be inferred or selected by user later
+            // Infer programming language from user input, or default
+            programmingLanguage: userInput.toLowerCase().includes("javascript") ? "javascript" : 
+                                 userInput.toLowerCase().includes("python") ? "python" :
+                                 userInput.toLowerCase().includes("typescript") ? "typescript" :
+                                 userInput.toLowerCase().includes("html") ? "html" :
+                                 userInput.toLowerCase().includes("css") ? "css" :
+                                 "code", // A generic default
           };
           const result: GenerateCodeOutput = await generateCode(codeInput);
           
-          let botResponse = `\`\`\`${codeInput.programmingLanguage || 'code'}\n${result.generatedCode}\n\`\`\``;
+          let botResponse = `\`\`\`${result.explanation ? codeInput.programmingLanguage : (codeInput.programmingLanguage || 'code')}\n${result.generatedCode}\n\`\`\``;
           if (result.explanation) {
             botResponse += `\n\n**Explanation:**\n${result.explanation}`;
           }
@@ -82,7 +88,7 @@ export default function ChatInterface({ onContentGenerated }: ChatInterfaceProps
           
           const newHistoryEntry = `User: ${userInput}\nAssistant (${modelDisplayName}): (Code Snippet Provided)\n${result.explanation || ''}`;
           setConversationHistory(prev => `${prev}\n${newHistoryEntry}`.trim());
-          onContentGenerated(result.generatedCode, 'code', `Code: ${playgroundTitleBase}`);
+          onContentGenerated(result.generatedCode, 'code', `Code: ${playgroundTitleBase} (${codeInput.programmingLanguage})`);
 
         } else if (selectedModelValue === "together-image") {
           const imageInput: GenerateImageInput = {
@@ -125,15 +131,16 @@ export default function ChatInterface({ onContentGenerated }: ChatInterfaceProps
                 ? { ...m, content: `Sorry, I encountered an error generating the image: ${errorMessage}` }
                 : m
             ));
+             onContentGenerated(`Error generating image: ${errorMessage}`, 'text', 'Image Generation Error');
         } else {
             addMessage({ role: "assistant", content: `Sorry, I encountered an error: ${errorMessage}`, modelUsed: "System Error"});
+            onContentGenerated(`Error: ${errorMessage}`, 'text', 'Processing Error');
         }
         toast({
           title: "Error",
           description: `Failed to get response from AI: ${errorMessage}`,
           variant: "destructive",
         });
-        onContentGenerated(`Error: ${errorMessage}`, 'text', 'Processing Error');
       } finally {
         setIsLoading(false);
       }
@@ -142,7 +149,7 @@ export default function ChatInterface({ onContentGenerated }: ChatInterfaceProps
   );
 
   return (
-    <div className="flex flex-col flex-grow bg-background overflow-hidden h-full"> {/* Ensure h-full */}
+    <div className="flex flex-col flex-grow bg-card overflow-hidden h-full">
       <MessageList messages={messages} isLoading={isLoading} />
       <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
     </div>
