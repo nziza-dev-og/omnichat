@@ -1,6 +1,7 @@
 
 "use client";
 
+import React from "react"; // Added React import
 import type { Message } from "./ChatInterface";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,7 @@ export default function MessageItem({ message, playAudio }: MessageItemProps) {
           </div>
         ) : (
           <div className="markdown-content prose prose-sm dark:prose-invert max-w-none">
-            <ReactMarkdown 
+            <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
                 h1: ({node, ...props}) => <h1 className="text-xl font-semibold mt-2 mb-1" {...props} />,
@@ -53,7 +54,7 @@ export default function MessageItem({ message, playAudio }: MessageItemProps) {
                 code: ({node, inline, className, children, ...props}) => {
                   const match = /language-(\w+)/.exec(className || '')
                   return !inline && match ? (
-                    <div className="my-2 rounded-md overflow-hidden border bg-muted"> 
+                    <div className="my-2 rounded-md overflow-hidden border bg-muted">
                       <div className="px-3 py-1 text-xs text-muted-foreground/70 border-b">
                         {match[1]}
                       </div>
@@ -101,4 +102,3 @@ export default function MessageItem({ message, playAudio }: MessageItemProps) {
     </div>
   );
 }
-

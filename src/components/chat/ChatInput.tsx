@@ -1,8 +1,7 @@
 
 "use client";
 
-import type React from "react";
-import { useState, type ChangeEvent, type KeyboardEvent, useRef, useEffect } from "react";
+import React, { useState, type ChangeEvent, type KeyboardEvent, useRef, useEffect } from "react"; // Standardized React import
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SendHorizonal, PlusCircle } from "lucide-react"; // Added PlusCircle
@@ -27,11 +26,11 @@ export default function ChatInput({ onSendMessage, isLoading, onNewChat }: ChatI
 
   const adjustTextareaHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"; 
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`; 
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
     }
   };
-  
+
   useEffect(() => {
     adjustTextareaHeight();
   }, [inputValue]);
@@ -42,7 +41,7 @@ export default function ChatInput({ onSendMessage, isLoading, onNewChat }: ChatI
       onSendMessage(inputValue.trim(), selectedModel);
       setInputValue("");
       if (textareaRef.current) {
-        textareaRef.current.style.height = "auto"; 
+        textareaRef.current.style.height = "auto";
       }
     }
   };
@@ -82,17 +81,17 @@ export default function ChatInput({ onSendMessage, isLoading, onNewChat }: ChatI
           onModelChange={setSelectedModel}
           disabled={isLoading}
         />
-        <Button 
-          onClick={handleSend} 
-          disabled={isLoading || !inputValue.trim()} 
-          size="icon" 
+        <Button
+          onClick={handleSend}
+          disabled={isLoading || !inputValue.trim()}
+          size="icon"
           className={cn(
-            "h-9 w-9 shrink-0 rounded-md", 
+            "h-9 w-9 shrink-0 rounded-md",
             isLoading || !inputValue.trim() ? "bg-muted text-muted-foreground cursor-not-allowed" : "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
           aria-label="Send message"
         >
-          <SendHorizonal size={18} /> 
+          <SendHorizonal size={18} />
         </Button>
       </div>
       <p className="text-xs text-muted-foreground/60 mt-2 text-center">
@@ -101,4 +100,3 @@ export default function ChatInput({ onSendMessage, isLoading, onNewChat }: ChatI
     </div>
   );
 }
-
